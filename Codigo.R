@@ -1,0 +1,51 @@
+library(rvest)
+
+countries <- ("Argentina")
+
+for (country in 1:length(countries)) {
+  for (year in 2017) {
+    pos <- NULL
+    artist <- NULL
+    graph <- data.frame(s=character(), t=character(), ty=character(), w=double())
+    lst <- data.frame(p=integer(), n=integer(), a=character())
+    
+    for (week in 1:45) {
+      print(paste("Processing year", year, "and week", week, "for", countries[country]))
+      url <- paste("http://los40.com.ar/lista40/", year, "/", week, sep="")
+      html <- read_html(url)
+      divs <- html %>% html_nodes("div.article.estirar") 
+      pos <- divs %>% html_nodes("span.posicion") %>% html_text()
+      artists <- divs %>% html_nodes("div.info_grupo h4") %>% html_text()
+      if (length(artists)==0) { break }
+      
+      for (a in 1:40) {
+        artist <- strsplit(artists[a], ";")[[1]]
+        p <- pos[a]
+        if (is.na(p)) { break }
+        lst <- rbind(lst, data.frame(as.numeric(p), length(artist), gsub(" »", "", artists[a])))
+        
+        if (length(artist)>1) {
+          for (i in 1:length(artist)) {
+            if (length(artist)>=(i+1)) {
+              for (j in (i+1):length(artist)) {
+                s <- gsub(" »", "", artist[i])
+                t <- gsub(" »", "", artist[j])
+                w <- 40 / as.numeric(p)
+                graph <- rbind(graph, data.frame(s, t, "undirected", w))
+              }
+            }
+          }
+        }
+      }
+      
+      Sys.sleep(0.5)
+    }
+    colnames(graph) <- c("source", "target", "type", "weight")
+    write.csv(graph, paste("los40-ar-", year, "-graph.csv", sep=""), row.names=FALSE)
+    
+    colnames(lst) <- c("position", "num_authors", "authors")
+    write.csv(lst, paste("los40-ar-", year, "-list.csv", sep=""), row.names=FALSE)
+  }
+}
+artists
+
