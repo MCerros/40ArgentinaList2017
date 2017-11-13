@@ -1,3 +1,5 @@
+![Imagen](https://github.com/MCerros/40ArgentinaList2017/blob/master/40PrincipalesArgentina.png)
+
 # 40ArgentinaList2017
 Web scraping de todos los resultados de la lista de los 40 Principales argentina para el año 2017
 
