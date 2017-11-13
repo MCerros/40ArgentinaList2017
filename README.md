@@ -20,3 +20,10 @@ Se ha elegido el ranking del país austral debido a que, quien escribe (MCerros)
 Dicho repositorio ha sido realizado como parte de la PEC2, de la asignatura “Tipología y ciclo de vida de los datos” de la UOC.
 
 Licencia: la licencia escogida es "Unlicensed" o sea, sin licencia, en otras palabras, este repositorio no tiene ningún tipo de licencia asociada. De esta manera cualquier persona u organización puede usar, copiar, o modificar este código sin ningún problema.
+
+Archivos:
+
+LICENSE: Licencia
+CodigoR y Codigo.R: Código escrito en R
+DatasetLista.csv: Datos extraídos.
+Artists.csv: Ejemplo de lista semanal
