@@ -94,7 +94,7 @@ for (country in 1:length(countries)) {
   }
 }
 ```
-Ejemplo aplicación del codigo:
+Ejemplo aplicación del código:
 
 ```
 [1] "Processing year 2017 and week 1 for Argentina"
