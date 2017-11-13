@@ -27,3 +27,85 @@ LICENSE: Licencia
 CodigoR y Codigo.R: Código escrito en R
 DatasetLista.csv: Datos extraídos.
 Artists.csv: Ejemplo de lista semanal
+
+Ejemplo DatasetLista (Graph)
+```
+> graph
+                source            target       type    weight
+1              Shakira            Maluma undirected 40.000000
+2        Ariana Grande       Nicki Minaj undirected 13.333333
+3           The Weeknd         Daft Punk undirected 10.000000
+4       Cédric Gervais      Chris Willis undirected  8.000000
+5       Cédric Gervais      David Guetta undirected  8.000000
+6         Chris Willis      David Guetta undirected  8.000000
+7             J Balvin               BIA undirected  6.666667
+8             J Balvin Pharrell Williams undirected  6.666667
+...
+```
+Ejemplo Código
+```
+library(rvest)
+
+countries <- ("Argentina")
+
+for (country in 1:length(countries)) {
+  for (year in 2017) {
+    pos <- NULL
+    artist <- NULL
+    graph <- data.frame(s=character(), t=character(), ty=character(), w=double())
+    lst <- data.frame(p=integer(), n=integer(), a=character())
+    
+    for (week in 1:45) {
+      print(paste("Processing year", year, "and week", week, "for", countries[country]))
+      url <- paste("http://los40.com.ar/lista40/", year, "/", week, sep="")
+      html <- read_html(url)
+      divs <- html %>% html_nodes("div.article.estirar") 
+      pos <- divs %>% html_nodes("span.posicion") %>% html_text()
+      artists <- divs %>% html_nodes("div.info_grupo h4") %>% html_text()
+      if (length(artists)==0) { break }
+      
+      for (a in 1:40) {
+        artist <- strsplit(artists[a], ";")[[1]]
+        p <- pos[a]
+        if (is.na(p)) { break }
+        lst <- rbind(lst, data.frame(as.numeric(p), length(artist), gsub(" Â»", "", artists[a])))
+        
+        if (length(artist)>1) {
+          for (i in 1:length(artist)) {
+            if (length(artist)>=(i+1)) {
+              for (j in (i+1):length(artist)) {
+                s <- gsub(" Â»", "", artist[i])
+                t <- gsub(" Â»", "", artist[j])
+                w <- 40 / as.numeric(p)
+                graph <- rbind(graph, data.frame(s, t, "undirected", w))
+              }
+            }
+          }
+        }
+      }
+      
+      Sys.sleep(0.5)
+    }
+    colnames(graph) <- c("source", "target", "type", "weight")
+    write.csv(graph, paste("los40-ar-", year, "-graph.csv", sep=""), row.names=FALSE)
+    
+    colnames(lst) <- c("position", "num_authors", "authors")
+    write.csv(lst, paste("los40-ar-", year, "-list.csv", sep=""), row.names=FALSE)
+  }
+}
+```
+Ejemplo aplicación del codigo:
+
+```
+[1] "Processing year 2017 and week 1 for Argentina"
+[1] "Processing year 2017 and week 2 for Argentina"
+[1] "Processing year 2017 and week 3 for Argentina"
+[1] "Processing year 2017 and week 4 for Argentina"
+[1] "Processing year 2017 and week 5 for Argentina"
+[1] "Processing year 2017 and week 6 for Argentina"
+[1] "Processing year 2017 and week 7 for Argentina"
+[1] "Processing year 2017 and week 8 for Argentina"
+[1] "Processing year 2017 and week 9 for Argentina"
+[1] "Processing year 2017 and week 10 for Argentina"
+...
+```
